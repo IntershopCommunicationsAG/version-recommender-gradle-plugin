@@ -1,0 +1,162 @@
+plugins {
+    // project plugins
+    id 'java'
+    id 'java-gradle-plugin'
+    id 'groovy'
+    id 'application'
+    // test coverage
+    id 'jacoco'
+
+    // ide plugin
+    id 'idea'
+    id 'eclipse'
+
+    // publish plugin
+    id 'maven-publish'
+
+    // intershop version plugin
+    id 'com.intershop.gradle.scmversion' version '2.1.0'
+
+    // plugin for publishing to Gradle Portal
+    id 'com.gradle.plugin-publish' version '0.9.5'
+
+    // plugin for publishing to jcenter
+    id 'com.jfrog.bintray' version '1.7.1'
+}
+
+scm {
+    version {
+        initialVersion = '1.0.0'
+    }
+}
+
+// release configuration
+group = 'com.intershop.gradle.version-recommender'
+description 'Gradle dependency recommendation plugin'
+version = scm.version.version
+mainClassName = 'com.intershop.version.recommender.MainAnalyseIvy'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// set correct project status
+if (project.version.endsWith('-SNAPSHOT')) {
+    status = 'snapshot'
+}
+
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+task groovydocJar(type: Jar) {
+	dependsOn groovydoc
+	classifier = 'javadoc'
+	from groovydoc.destinationDir
+}
+
+// additional sources artifact
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+}
+
+publishing {
+	publications {
+		intershopMvn(MavenPublication) {
+			from components.java
+
+			artifact sourceJar {
+				classifier 'sources'
+			}
+
+			artifact groovydocJar {
+				classifier "javadoc"
+			}
+
+			pom.withXml {
+				def Node root = asNode();
+				root.appendNode('name', project.name)
+				root.appendNode('description', project.description)
+				root.appendNode('url', "https:/gitlab.intershop.de/IntershopGradlePlugins/${project.name}")
+
+				def scm = root.appendNode( 'scm' )
+				scm.appendNode( 'url', "https://gitlab.intershop.de/IntershopGradlePlugins/${project.name}")
+				scm.appendNode( 'connection', "scm:git:https://gitlab.intershop.de/IntershopGradlePlugins/${project.name}.git")
+
+				def org = root.appendNode( 'organization' )
+				org.appendNode( 'name', 'Intershop Communications' )
+				org.appendNode( 'url', 'http://intershop.com' )
+
+				def license = root.appendNode( 'licenses' ).appendNode( 'license' );
+				license.appendNode( 'name', 'Apache License, Version 2.0' )
+				license.appendNode( 'url', 'http://www.apache.org/licenses/LICENSE-2.0' )
+				license.appendNode( 'distribution', 'repo' )
+			}
+		}
+	}
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'maven'
+        name = project.name
+        userOrg = 'intershopcommunicationsag'
+
+        licenses = ['Apache-2.0']
+        vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+
+        desc = project.description
+        websiteUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+        issueTrackerUrl = "https://github.com/IntershopCommunicationsAG/${project.name}/issues"
+
+        labels = ['intershop', 'gradle', 'plugin', 'dependency', 'analysis']
+        publicDownloadNumbers = true
+
+        version {
+            name = project.version
+            desc = "${project.description} ${project.version}"
+            released  = new Date()
+            vcsTag = project.version
+        }
+
+        publications = ['intershopMvn']
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    description = project.description
+    tags = ['intershop', 'gradle', 'plugin', 'dependency', 'analysis']
+
+    plugins {
+        gradleTestPlugin {
+            id = 'com.intershop.gradle.version.recommender'
+            displayName = project.description
+        }
+    }
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'commons-io:commons-io:2.5' // IOUtils
+    compile 'org.apache.httpcomponents:httpclient:4.5.2'
+    compile 'org.apache.ivy:ivy:2.4.+'
+    compile 'org.json:json:20160810'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+
+    runtime 'ch.qos.logback:logback-classic:1.1.7'
+
+    testCompile 'junit:junit:4.12'
+}
+
+repositories {
+	jcenter()
+}

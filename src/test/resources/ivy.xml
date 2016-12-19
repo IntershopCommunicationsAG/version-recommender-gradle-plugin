@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+  <info organisation="com.intershop.gradle" module="test" revision="build" status="integration" publication="20160427181705" e:productName="Gradle Test" e:copyrightOwner="Intershop Communications" e:copyrightFrom="2005" e:deployment="2016-04-27 18:18">
+    <e:requiresJdk vendor="^Oracle .*" version="1\.8\.0_\d+"/>
+  </info>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="deploy" type="deploy-gradle" ext="gradle" conf="default"/>
+    <artifact name="deploy-settings" type="deploy-settings-gradle" ext="gradle" conf="default"/>
+  </publications>
+  <dependencies defaultconfmapping="*-&gt;default">
+    <dependency org="ch.qos.logback" name="logback-classic" rev="1.0.13" conf="default" transitive="false"/>
+    <dependency org="ch.qos.logback" name="logback-core" rev="1.0.13" conf="default" transitive="false"/>
+    <dependency org="com.amazonaws" name="aws-java-sdk-core" rev="1.10.47" conf="default" transitive="false"/>
+    <dependency org="com.amazonaws" name="aws-java-sdk-sns" rev="1.10.47" conf="default" transitive="false"/>
+    <dependency org="com.amazonaws" name="aws-java-sdk-sqs" rev="1.10.47" conf="default" transitive="false"/>
+  </dependencies>
+</ivy-module>
