@@ -111,7 +111,7 @@ https://github.com/stempler/gradle-versioneye-plugin
 
 # License
 
-Copyright 2014-2016 Intershop Communications.
+Copyright 2014-2017 Intershop Communications.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
