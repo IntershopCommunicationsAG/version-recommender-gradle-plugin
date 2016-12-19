@@ -1,15 +1,7 @@
 # Introduction
 
-Tool to read dependency information from an ivy.xml file and contacts maven
-central for updated versions.
-
-This tools:
-- parses the ivy.xml
-- extract all dependencies
-- ignores dependencies including 'intershop' in group name
-- checks maven central for all remaining dependencies for newer versions
-- version information are cached in versions.xml
-- prints dependencies for update to STDOUT
+This gradle plugin allows to automate dependency updates. Therefore the project can define an update strategy.
+This plugin works together with the nebula-dependency-recommender and nebula-publishing-plugin to inject the resolved versions in to the build configuration.
 
 # Update strategy
 
@@ -25,6 +17,9 @@ update of third party libraries are necessary. The available strategy are derive
 | STICK     | uses current version             |
 
 # Supported version patterns and extensions
+
+Unfortunally not all open source projects using semantic versioning or derived version patterns. Therefore the plugin tries to imagine major, minor, patch, increments and release extensions.
+Following patterns are recognized:
 
 | pattern       | example      | description                                                                                            |
 |---------------|--------------|--------------------------------------------------------------------------------------------------------|
@@ -102,7 +97,9 @@ com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:r136:(nonsema
 Special thanks for the ideas and how to extract versions from dependencies:
 
 https://github.com/nebula-plugins/nebula-dependency-recommender-plugin
+
 https://github.com/nebula-plugins/gradle-dependency-lock-plugin
+
 https://github.com/nebula-plugins/nebula-publishing-plugin
 
 # License
