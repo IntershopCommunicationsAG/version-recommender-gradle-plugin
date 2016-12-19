@@ -3,6 +3,10 @@
 This gradle plugin allows to automate dependency updates. Therefore the project can define an update strategy.
 This plugin works together with the nebula-dependency-recommender and nebula-publishing-plugin to inject the resolved versions in to the build configuration.
 
+This plugin doesn't use the standard gradle version resolver. The version.properties contains the current version of the project, so no pattern are used, like (1.3.+).
+The resolver uses the current version, the defined update strategy and a list of available versions to use calculate the new recommended version.
+Therefore an additional lock file is not necessary.
+
 # Update strategy
 
 Dependent on the context of development, stabilization or feature development, different update strategies for
@@ -18,7 +22,8 @@ update of third party libraries are necessary. The available strategy are derive
 
 # Supported version patterns and extensions
 
-Unfortunally not all open source projects using semantic versioning or derived version patterns. Therefore the plugin tries to imagine major, minor, patch, increments and release extensions.
+Unfortunally, not all open source projects using semantic versioning or derived version patterns. Therefore the plugin tries to imagine major, minor, patch, increments and release extensions.
+
 Following patterns are recognized:
 
 | pattern       | example      | description                                                                                            |
@@ -94,13 +99,15 @@ com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:r136:(nonsema
 
 # Thanks
 
-Special thanks for the ideas and how to extract versions from dependencies:
+Special thanks for the ideas to write this plugin:
 
 https://github.com/nebula-plugins/nebula-dependency-recommender-plugin
 
 https://github.com/nebula-plugins/gradle-dependency-lock-plugin
 
 https://github.com/nebula-plugins/nebula-publishing-plugin
+
+https://github.com/stempler/gradle-versioneye-plugin
 
 # License
 
