@@ -1,17 +1,10 @@
 package com.intershop.tool.version.recommender.resolver;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import javax.xml.bind.JAXBException;
-
-import org.slf4j.LoggerFactory;
 
 import com.intershop.tool.version.recommender.xml.Artifact;
 import com.intershop.tool.version.recommender.xml.Versions;
@@ -42,14 +35,7 @@ public class CachedVersionResolver implements VersionResolver
             return cacheEntry.get();
         }
         Collection<String> result = delegate.getVersions(group, artifactID);
-        try
-        {
-            storeAtCache(group, artifactID, result);
-        }
-        catch(IOException|JAXBException e)
-        {
-            LoggerFactory.getLogger(getClass()).error("Can't store retrieved data", e);
-        }
+        storeAtCache(group, artifactID, result);
         return result;
     }
 
@@ -68,7 +54,7 @@ public class CachedVersionResolver implements VersionResolver
         return cache.getArtifacts().stream().filter(e -> e.getArtifactId().equals(artifactID) && e.getGroupId().equals(group)).findAny().map(e -> e.getVersions());
     }
 
-    private void storeAtCache(String group, String artifactID, Collection<String> result) throws IOException, JAXBException
+    private void storeAtCache(String group, String artifactID, Collection<String> result)
     {
         if (cache == null)
         {
@@ -85,10 +71,7 @@ public class CachedVersionResolver implements VersionResolver
         {
             dir.mkdirs();
         }
-        try(FileWriter writer = new FileWriter(file))
-        {
-            loader.exportXML(cache, writer);
-        }
+        loader.exportXML(cache, file);
     }
 
     private Versions loadCache()
@@ -97,14 +80,6 @@ public class CachedVersionResolver implements VersionResolver
         {
             return new Versions();
         }
-        try(FileInputStream is = new FileInputStream(file))
-        {
-            return loader.importXML(is, Versions.class);
-        }
-        catch(IOException e)
-        {
-            throw new RuntimeException("Can't load file: " + file.getAbsolutePath(), e);
-        }
-
+        return loader.importXML(file, Versions.class);
     }
 }

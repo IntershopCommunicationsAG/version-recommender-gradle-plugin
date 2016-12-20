@@ -30,13 +30,18 @@ public class Recommender
             {
                 continue;
             }
+            UpdateStrategies allowedChanges = getAllowedChanges(dep.getGroupID(), dep.getArtifactID(), strategy,
+                            exceptions);
+            if (UpdateStrategies.STICK.equals(allowedChanges))
+            {
+                continue;
+            }
             if (isIncrementable(currentVersion))
             {
                 Collection<String> availableVersions = versionResolver.getVersions(dep.getGroupID(),
                                 dep.getArtifactID());
-                String newestPatchString = SemanticVersions.getNewestVersion(
-                                getAllowedChanges(dep.getGroupID(), dep.getArtifactID(), strategy, exceptions),
-                                availableVersions, dep.getVersion());
+                String newestPatchString = SemanticVersions.getNewestVersion(allowedChanges, availableVersions,
+                                dep.getVersion());
                 if (!newestPatchString.equals(dep.getVersion()))
                 {
                     System.out.println(dep.getGroupID() + ":" + dep.getArtifactID() + ":" + dep.getVersion() + ":"
@@ -49,11 +54,12 @@ public class Recommender
             }
             else
             {
-                System.out.printf("dependency '%s:%s' with version '%s' can't be incremented", dep.getGroupID(),
-                                dep.getArtifactID(), currentVersion == null ? "(none)" : currentVersion);
+                System.out.printf("dependency '%s:%s' with version '%s' can't be incremented automatically\r\n",
+                                dep.getGroupID(), dep.getArtifactID(),
+                                currentVersion == null ? "(none)" : currentVersion);
             }
         }
-        System.out.printf("%d dependencies are up to date", counterUp2Date);
+        System.out.printf("%d dependencies are up to date\r\n", counterUp2Date);
     }
 
     private static boolean isIncrementable(String currentVersion)
@@ -67,13 +73,16 @@ public class Recommender
         {
             return null;
         }
-        Collection<String> availableVersions = versionResolver.getVersions(groupID, artifactID);
+        UpdateStrategies allowedChanges = getAllowedChanges(groupID, artifactID, strategy, exceptions);
         String currentVersion = versionProvider.getVersion(groupID, artifactID);
+        if (UpdateStrategies.STICK.equals(allowedChanges))
+        {
+            return currentVersion;
+        }
+        Collection<String> availableVersions = versionResolver.getVersions(groupID, artifactID);
         try
         {
-            String newestVersion = SemanticVersions.getNewestVersion(
-                            getAllowedChanges(groupID, artifactID, strategy, exceptions), availableVersions,
-                            currentVersion);
+            String newestVersion = SemanticVersions.getNewestVersion(allowedChanges, availableVersions, currentVersion);
             if (newestVersion != null && !newestVersion.equals(currentVersion))
             {
                 System.out.println(groupID + ":" + artifactID + ":" + currentVersion + ":" + newestVersion);

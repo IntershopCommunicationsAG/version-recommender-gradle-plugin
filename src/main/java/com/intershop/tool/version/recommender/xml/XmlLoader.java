@@ -1,8 +1,13 @@
 package com.intershop.tool.version.recommender.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -26,15 +31,80 @@ public class XmlLoader
         T definition = null;
         try
         {
-            System.setProperty("javax.xml.bind.JAXBContext", "com.sun.xml.internal.bind.v2.ContextFactory");
+            // System.setProperty("javax.xml.bind.JAXBContext", "com.sun.xml.internal.bind.v2.ContextFactory");
             JAXBContext context = JAXBContext.newInstance(expectedType);
             Unmarshaller um = context.createUnmarshaller();
-            definition = (T) um.unmarshal(inputStream);
+            definition = (T)um.unmarshal(inputStream);
         }
         catch(JAXBException e)
         {
             throw new IOException(e);
         }
         return definition;
+    }
+
+    public void exportXML(Versions xmlModel, File file)
+    {
+        try
+        {
+            waitForLockFile(file);
+            try (FileWriter writer = new FileWriter(file))
+            {
+                exportXML(xmlModel, writer);
+            }
+        }
+        catch(IOException|JAXBException|InterruptedException e)
+        {
+            throw new RuntimeException("Can't export file:" + file.getAbsolutePath(), e);
+        }
+        finally
+        {
+            removeLockFile(file);
+        }
+    }
+
+    private static void removeLockFile(File file)
+    {
+        File lockFile = getLockFile(file);
+        if (lockFile.exists())
+        {
+            lockFile.delete();
+        }
+
+    }
+
+    private static void waitForLockFile(File file) throws InterruptedException, IOException
+    {
+        File lockFile = getLockFile(file);
+        while(lockFile.exists())
+        {
+            Thread.sleep(10);
+        }
+        Files.write(lockFile.toPath(), "".getBytes(), StandardOpenOption.CREATE);
+    }
+
+    private static File getLockFile(File file)
+    {
+        return new File(file.getAbsolutePath() + ".lock");
+    }
+
+    public <T> T importXML(File file, Class<T> expectedType)
+    {
+        try
+        {
+            waitForLockFile(file);
+            try (FileInputStream is = new FileInputStream(file))
+            {
+                return importXML(is, expectedType);
+            }
+        }
+        catch(InterruptedException | IOException e)
+        {
+            throw new RuntimeException("Can't import file:" + file.getAbsolutePath(), e);
+        }
+        finally
+        {
+            removeLockFile(file);
+        }
     }
 }
