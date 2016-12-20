@@ -7,9 +7,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.intershop.tool.version.recommender.semantic.ReleaseType;
-import com.intershop.tool.version.recommender.semantic.SemanticVersion;
-
 public class SemanticVersionTest
 {
     @Test
@@ -46,7 +43,6 @@ public class SemanticVersionTest
         assertEquals("development release are not semantic", 1, SemanticVersion.valueOf("FB-12.0.0-ANYISUSE-12233-dev1").getIncrement());
     }
 
-
     @Test
     public void testShortSemanticVersions()
     {
@@ -73,5 +69,11 @@ public class SemanticVersionTest
     public void testFourDigits()
     {
         assertTrue("four digits are valid", SemanticVersion.valueOf("2.7.6.1").isIncrementable());
+    }
+
+    @Test
+    public void testJettyVersion()
+    {
+        assertEquals("jetty version 14", 0, SemanticVersion.valueOf("9.3.14.v20161028").getIncrement());
     }
 }
