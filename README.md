@@ -29,11 +29,12 @@ Following patterns are recognized:
 | pattern       | example      | description                                                                                            |
 |---------------|--------------|--------------------------------------------------------------------------------------------------------|
 | \d+\.\d+\.\d+ | 1.2.3        | standard three numbers semantic versions                                                               |
-| .FINAL        | 5.1.3.Final  | several GA extensions separated with a dot (the lowercase of the extension must be 'final' or ('ga')   |
-| -GA           | 1.2.3-ga     | several GA extensions separated with a dash (the lowercase of the extension must be 'final' or ('ga')  |
 | \d+\.\d+\.\d+\.\d+ | 1.2.3.4 | four numbers (fourth number is interpreted as increments (first three following the semantic versions) |
 | \d+\.\d+      | 1.2          | two numbers (mainly used for projects without separate patch development) interpreted as 1.2.0         |
 | \d+           | 1            | one number (seldom used for projects, which providing an API) interpreted as 1.0.0                     |
+| .FINAL        | 5.1.3.Final  | several GA extensions separated with a dot (the lowercase of the extension must be 'final' or ('ga')   |
+| -GA           | 1.2.3-ga     | several GA extensions separated with a dash (the lowercase of the extension must be 'final' or ('ga')  |
+| .v\d{8}       | 1.2.3.v20160101 | jetty GA extensions with date                                                                       |
 | -RC\d+        | 1.2.3-rc1    | release candidates (will be supported by INC strategy)                                                 |
 | -DEV\d+       | 1.2.3-dev1   | internal development release (will be supported by INC strategy)                                       |
 

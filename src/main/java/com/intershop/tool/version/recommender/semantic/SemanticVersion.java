@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class SemanticVersion
 {
     final static Pattern INCREMENT_PATTERN = Pattern.compile("^(.*[^0-9])+([0-9]+)$");
+    final static Pattern JETTY_GA_PATTERN = Pattern.compile("^v[0-9]{8}$");
 
     public static SemanticVersion valueOf(String revision)
     {
@@ -56,7 +57,10 @@ public class SemanticVersion
                         if (matcher.find()) {
                             incrementState = getIncrementState(matcher.group(1).toLowerCase());
                             String someNumberStr = matcher.group(2);
-                            numbers[3] = Integer.parseInt(someNumberStr);
+                            if (!JETTY_GA_PATTERN.matcher(parts[i]).find())
+                            {
+                                numbers[3] = Integer.parseInt(someNumberStr);
+                            }
                         }
                         else
                         {
@@ -103,6 +107,10 @@ public class SemanticVersion
         if ("dev".equals(lowerCased))
         {
             return ReleaseType.DEV;
+        }
+        if (JETTY_GA_PATTERN.matcher(lowerCased).find())
+        {
+            return ReleaseType.GA;
         }
         return null;
     }

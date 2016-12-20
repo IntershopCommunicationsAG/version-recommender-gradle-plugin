@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.intershop.tool.version.recommender.resolver.VersionResolver;
+import com.intershop.tool.version.recommender.semantic.SemanticVersion;
 import com.intershop.tool.version.recommender.semantic.SemanticVersions;
 import com.intershop.tool.version.recommender.semantic.UpdateStrategies;
 
@@ -24,12 +25,18 @@ public class Recommender
         int counterUp2Date = 0;
         for (Dependency dep : dependencies)
         {
-            if (dep.getGroupID().toLowerCase().indexOf("intershop") < 0)
+            String currentVersion = versionProvider.getVersion(dep.getGroupID(), dep.getArtifactID());
+            if (currentVersion == null)
+            {
+                continue;
+            }
+            if (isIncrementable(currentVersion))
             {
                 Collection<String> availableVersions = versionResolver.getVersions(dep.getGroupID(),
                                 dep.getArtifactID());
-                String newestPatchString = SemanticVersions.getNewestVersion(getAllowedChanges(dep.getGroupID(), dep.getArtifactID(), strategy, exceptions), availableVersions,
-                                dep.getVersion());
+                String newestPatchString = SemanticVersions.getNewestVersion(
+                                getAllowedChanges(dep.getGroupID(), dep.getArtifactID(), strategy, exceptions),
+                                availableVersions, dep.getVersion());
                 if (!newestPatchString.equals(dep.getVersion()))
                 {
                     System.out.println(dep.getGroupID() + ":" + dep.getArtifactID() + ":" + dep.getVersion() + ":"
@@ -40,8 +47,18 @@ public class Recommender
                     counterUp2Date++;
                 }
             }
+            else
+            {
+                System.out.printf("dependency '%s:%s' with version '%s' can't be incremented", dep.getGroupID(),
+                                dep.getArtifactID(), currentVersion == null ? "(none)" : currentVersion);
+            }
         }
         System.out.printf("%d dependencies are up to date", counterUp2Date);
+    }
+
+    private static boolean isIncrementable(String currentVersion)
+    {
+        return SemanticVersion.valueOf(currentVersion).isIncrementable();
     }
 
     public String getVersion(String groupID, String artifactID, String strategy, Map<String, String> exceptions)
@@ -54,8 +71,9 @@ public class Recommender
         String currentVersion = versionProvider.getVersion(groupID, artifactID);
         try
         {
-            String newestVersion = SemanticVersions.getNewestVersion(getAllowedChanges(groupID, artifactID, strategy, exceptions),
-                            availableVersions, currentVersion);
+            String newestVersion = SemanticVersions.getNewestVersion(
+                            getAllowedChanges(groupID, artifactID, strategy, exceptions), availableVersions,
+                            currentVersion);
             if (newestVersion != null && !newestVersion.equals(currentVersion))
             {
                 System.out.println(groupID + ":" + artifactID + ":" + currentVersion + ":" + newestVersion);
@@ -70,7 +88,8 @@ public class Recommender
         }
     }
 
-    private static UpdateStrategies getAllowedChanges(String groupID, String artifactID, String strategy, Map<String, String> exceptions)
+    private static UpdateStrategies getAllowedChanges(String groupID, String artifactID, String strategy,
+                    Map<String, String> exceptions)
     {
         if (exceptions.containsKey(groupID + ":" + artifactID))
         {
