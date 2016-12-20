@@ -72,6 +72,13 @@ public class SemanticVersionTest
     }
 
     @Test
+    public void testFiveAndMoreDigits()
+    {
+        assertFalse("five digits are invalid", SemanticVersion.valueOf("5.4.3.2.1").isIncrementable());
+        assertFalse("six digits are invalid", SemanticVersion.valueOf("6.5.4.3.2.1").isIncrementable());
+    }
+
+    @Test
     public void testJettyVersion()
     {
         assertEquals("jetty version 14", 0, SemanticVersion.valueOf("9.3.14.v20161028").getIncrement());

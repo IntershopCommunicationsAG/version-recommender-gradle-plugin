@@ -10,7 +10,14 @@ public class SemanticVersion
 
     public static SemanticVersion valueOf(String revision)
     {
-        return new SemanticVersion(revision);
+        try
+        {
+            return new SemanticVersion(revision);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Can't create semantic version object for version '"+revision+"'.");
+        }
     }
 
     public static SemanticVersion valueOf(int major, int minor, int patch)
@@ -64,6 +71,11 @@ public class SemanticVersion
                         }
                         else
                         {
+                            if (i>3)
+                            {
+                                isIncrementable = false;
+                                break;
+                            }
                             Integer value = getDigit(parts[i]);
                             if (value == null)
                             {
