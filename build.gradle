@@ -14,9 +14,6 @@ plugins {
     // publish plugin
     id 'maven-publish'
 
-    // intershop version plugin
-    id 'com.intershop.gradle.scmversion' version '2.1.0'
-
     // plugin for publishing to Gradle Portal
     id 'com.gradle.plugin-publish' version '0.9.5'
 
@@ -24,16 +21,10 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.1'
 }
 
-scm {
-    version {
-        initialVersion = '1.0.0'
-    }
-}
-
 // release configuration
 group = 'com.intershop.gradle.version-recommender'
 description 'Gradle dependency recommendation plugin'
-version = scm.version.version
+version = '1.2.0'
 mainClassName = 'com.intershop.version.recommender.MainAnalyseIvy'
 
 sourceCompatibility = 1.8

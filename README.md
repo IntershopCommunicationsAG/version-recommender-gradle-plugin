@@ -48,7 +48,7 @@ buildscript {
     dependencies {
         classpath 'com.netflix.nebula:nebula-dependency-recommender:3.6.3'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:4.9.1'
-        classpath 'com.intershop.gradle.version-recommender:version-recommender-gradle-plugin:1.0.0'
+        classpath 'com.intershop.gradle.version-recommender:version-recommender-gradle-plugin:1.2.0'
     }
 }
 
