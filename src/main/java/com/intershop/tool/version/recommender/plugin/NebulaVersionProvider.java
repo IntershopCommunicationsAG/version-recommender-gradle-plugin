@@ -7,16 +7,18 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.intershop.tool.version.recommender.VersionProvider;
 
-public class NebulaVersionProperties implements VersionProvider
+public class NebulaVersionProvider implements VersionProvider
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NebulaVersionProvider.class);
     private final Map<String, String> properties;
     private final File propertiesFile;
 
-    public NebulaVersionProperties(File propertiesFile)
+    public NebulaVersionProvider(File propertiesFile)
     {
         this.propertiesFile = propertiesFile;
         this.properties = loadProperties(propertiesFile);
@@ -27,7 +29,8 @@ public class NebulaVersionProperties implements VersionProvider
     {
         return getVersion(group + ":" + name);
     }
-    public String getVersion(String key)
+
+    private String getVersion(String key)
     {
         String value = properties.get(key);
         while(value != null && value.startsWith("$"))
@@ -42,7 +45,7 @@ public class NebulaVersionProperties implements VersionProvider
         Map<String, String> result = new HashMap<>();
         if (!file.exists())
         {
-            LoggerFactory.getLogger(NebulaVersionProperties.class).error("version properties file '{}' doesn't exist", file.getAbsolutePath());
+            LOGGER.error("version properties file '{}' doesn't exist", file.getAbsolutePath());
         }
         try
         {
@@ -57,16 +60,9 @@ public class NebulaVersionProperties implements VersionProvider
         }
         catch(IOException e)
         {
-            LoggerFactory.getLogger(NebulaVersionProperties.class).error("Can't load version properties file", e);
+            LOGGER.error("Can't load version properties file", e);
         }
         return result;
-    }
-
-    @Override
-    public void storeVersions(Map<String, String> newVersions)
-    {
-        newVersions.entrySet().forEach(e -> setVersion(e.getKey(), e.getValue()));
-        storeVersions();
     }
 
     private static void storeProperties(File file, Map<String, String> properties)
@@ -80,13 +76,13 @@ public class NebulaVersionProperties implements VersionProvider
                 }
                 catch(IOException e1)
                 {
-                    LoggerFactory.getLogger(NebulaVersionProperties.class).error("Can't write version", e);
+                    LOGGER.error("Can't write version", e);
                 }
             });
         }
         catch(IOException e1)
         {
-            LoggerFactory.getLogger(NebulaVersionProperties.class).error("Can't write version", e1);
+            LOGGER.error("Can't write version", e1);
         }
     }
 
@@ -105,17 +101,6 @@ public class NebulaVersionProperties implements VersionProvider
             existingValue = properties.get(key);
         }
         properties.put(key, version);
-    }
-
-    @Override
-    public Map<String, String> getVersions()
-    {
-        Map<String, String> result = new HashMap<>();
-        for(String key : properties.keySet())
-        {
-            result.put(key, getVersion(key));
-        }
-        return result;
     }
 
     @Override

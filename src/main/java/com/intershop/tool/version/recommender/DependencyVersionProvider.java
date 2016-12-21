@@ -1,8 +1,6 @@
 package com.intershop.tool.version.recommender;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DependencyVersionProvider implements VersionProvider
 {
@@ -21,21 +19,13 @@ public class DependencyVersionProvider implements VersionProvider
     }
 
     @Override
-    public Map<String, String> getVersions()
-    {
-        Map<String, String> result = new HashMap<>();
-        dependencies.stream().forEach(t -> result.put(t.getGroupID() + ":" + t.getArtifactID(), t.getVersion()));
-        return result;
-    }
-
-    @Override
     public void setVersion(String group, String name, String version)
     {
         throw new UnsupportedOperationException("Can't store versions at dependencies");
     }
 
     @Override
-    public void storeVersions(Map<String, String> newVersions)
+    public void storeVersions()
     {
         throw new UnsupportedOperationException("Can't store versions at dependencies");
     }

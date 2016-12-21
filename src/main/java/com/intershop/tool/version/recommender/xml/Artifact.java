@@ -2,19 +2,20 @@ package com.intershop.tool.version.recommender.xml;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name="artifact")
+@XmlType(propOrder={"groupId", "artifactId", "versions"})
 public class Artifact
 {
     public static final String REGEX_SPLIT_VERSIONS = "[|]";
 
-    @XmlAttribute
-    private Date latestUpdate;
     @XmlAttribute
     private String groupId;
     @XmlAttribute
@@ -27,26 +28,13 @@ public class Artifact
         // default constructor
     }
 
-    public Artifact(String groupId, String artifactId, Date latestUpdate, Collection<String> versions)
+    public Artifact(String groupId, String artifactId, Collection<String> versions)
     {
         this.groupId = groupId;
         this.artifactId = artifactId;
-        this.latestUpdate = latestUpdate;
         StringJoiner joiner = new StringJoiner("|");
         versions.forEach(e -> joiner.add(e));
-        this.setVersions(joiner.toString());
-        latestUpdate = new Date();
-    }
-
-    @XmlTransient
-    public Date getLatestUpdate()
-    {
-        return latestUpdate;
-    }
-
-    public void setLatestUpdate(Date latestUpdate)
-    {
-        this.latestUpdate = latestUpdate;
+        this.versions = joiner.toString();
     }
 
     @XmlTransient

@@ -7,12 +7,10 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLVersionLoaderTest
@@ -30,15 +28,11 @@ public class XMLVersionLoaderTest
     }
 
     @Test
-    @Ignore
-    /**
-     * TODO use xml compare tool
-     */
     public void testExport() throws JAXBException, IOException
     {
         XmlLoader loader = new XmlLoader();
         Versions versions = new Versions();
-        versions.getArtifacts().add(new Artifact("groupid", "artifactID", new Date(1481120404125L), Arrays.asList("2.3.4", "2.4.5-RC3")));
+        versions.getArtifacts().add(new Artifact("groupid", "artifactID", Arrays.asList("2.3.4", "2.4.5-RC3")));
         StringWriter writer = new StringWriter();
         loader.exportXML(versions, writer);
         assertEquals("content correct", getString("versions.xml"), writer.toString().replace("\r", ""));

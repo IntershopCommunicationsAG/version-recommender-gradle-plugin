@@ -1,7 +1,6 @@
 package com.intershop.tool.version.recommender;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.intershop.tool.version.recommender.resolver.VersionResolver;
@@ -113,10 +112,7 @@ public class Recommender
 
     public void store(Collection<Dependency> dependencies, String strategy, Map<String, String> exceptions)
     {
-        Map<String, String> collectedNewVersions = new HashMap<>();
-        dependencies.forEach(d -> collectedNewVersions.put(d.getGroupID() + ":" + d.getArtifactID(),
-                        getVersion(d.getGroupID(), d.getArtifactID(), strategy, exceptions)));
-        versionProvider.storeVersions(collectedNewVersions);
-        collectedNewVersions.clear();
+        dependencies.forEach(d -> versionProvider.setVersion(d.getGroupID(), d.getArtifactID(), getVersion(d.getGroupID(), d.getArtifactID(), strategy, exceptions)));
+        versionProvider.storeVersions();
     }
 }

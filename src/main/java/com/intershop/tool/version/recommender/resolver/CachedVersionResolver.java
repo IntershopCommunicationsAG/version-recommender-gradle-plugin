@@ -2,7 +2,6 @@ package com.intershop.tool.version.recommender.resolver;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class CachedVersionResolver implements VersionResolver
             // load artifacts, may added in between
             cache.getArtifacts().addAll(loadCache().getArtifacts());
         }
-        cache.getArtifacts().add(new Artifact(group, artifactID, new Date(), result));
+        cache.getArtifacts().add(new Artifact(group, artifactID, result));
         File dir = file.getParentFile();
         if (!dir.exists())
         {

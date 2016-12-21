@@ -12,30 +12,27 @@ import org.junit.Test;
 
 import com.intershop.tool.version.recommender.VersionProvider;
 
-public class NebulaVersionPropertiesTest
+public class NebulaVersionProviderTest extends AbstractVersionPropertiesTest
 {
-    private final File versionResourceFile = new File(getClass().getResource("/version.properties").getFile());
-    private VersionProvider versionProvider = new NebulaVersionProperties(versionResourceFile);
+    private static final File versionResourceFile = new File(
+                    NebulaVersionProviderTest.class.getResource("/version.properties").getFile());
 
-    @Test
-    public void testSimpleVersion()
+    public NebulaVersionProviderTest()
     {
-        assertEquals("2.5", versionProvider.getVersion("commons-io", "commons-io"));
+        super(versionResourceFile);
     }
 
-    @Test
-    public void testIndirectVersion()
+    @Override
+    protected VersionProvider createTestObject(File propertiesFile)
     {
-        assertEquals("2.4.14", versionProvider.getVersion("com.typesafe.akka", "akka-testkit_2.11"));
+        return new NebulaVersionProvider(propertiesFile);
     }
 
     @Test
     public void testStorage() throws IOException
     {
-        Path tempDir = Files.createTempDirectory(getClass().getSimpleName());
-        Path tempFile = tempDir.resolve("workon.properties");
-        Files.copy(versionResourceFile.toPath(), tempFile);
-        NebulaVersionProperties underTest = new NebulaVersionProperties(tempFile.toFile());
+        Path tempFile = createTempProperties();
+        VersionProvider underTest = createTestObject(tempFile.toFile());
         underTest.storeVersions();
         List<String> lines = Files.readAllLines(tempFile);
         assertEquals("count of lines", 5, lines.size());
@@ -47,10 +44,8 @@ public class NebulaVersionPropertiesTest
     @Test
     public void testModifyVersion() throws IOException
     {
-        Path tempDir = Files.createTempDirectory(getClass().getSimpleName());
-        Path tempFile = tempDir.resolve("workon.properties");
-        Files.copy(versionResourceFile.toPath(), tempFile);
-        NebulaVersionProperties underTest = new NebulaVersionProperties(tempFile.toFile());
+        Path tempFile = createTempProperties();
+        VersionProvider underTest = createTestObject(tempFile.toFile());
         underTest.setVersion("com.typesafe.akka", "akka-actor_2.11", "2.5.1");
         underTest.storeVersions();
         List<String> lines = Files.readAllLines(tempFile);
@@ -59,4 +54,5 @@ public class NebulaVersionPropertiesTest
         assertEquals("line 2", "commons-io:commons-io=2.5", lines.get(1));
         assertEquals("line 3", "com.typesafe.akka:akka-actor_2.11=$com.typesafe.akka", lines.get(2));
     }
+
 }

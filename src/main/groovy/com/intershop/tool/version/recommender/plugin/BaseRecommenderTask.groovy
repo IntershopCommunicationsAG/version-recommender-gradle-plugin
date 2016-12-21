@@ -71,7 +71,7 @@ class BaseRecommenderTask extends DefaultTask {
     {
         if (versionProvider == null)
         {
-            versionProvider = new NebulaVersionProperties(getPropertiesFile());
+            versionProvider = getPropertiesFile().getName().contains("gradle.properties") ? new IntershopVersionProvider(getPropertiesFile()) : new NebulaVersionProvider(getPropertiesFile());
         }
         return versionProvider;
     }

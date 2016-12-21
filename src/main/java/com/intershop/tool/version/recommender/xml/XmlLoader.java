@@ -31,7 +31,6 @@ public class XmlLoader
         T definition = null;
         try
         {
-            // System.setProperty("javax.xml.bind.JAXBContext", "com.sun.xml.internal.bind.v2.ContextFactory");
             JAXBContext context = JAXBContext.newInstance(expectedType);
             Unmarshaller um = context.createUnmarshaller();
             definition = (T)um.unmarshal(inputStream);
@@ -43,7 +42,7 @@ public class XmlLoader
         return definition;
     }
 
-    public void exportXML(Versions xmlModel, File file)
+    public void exportXML(Object xmlModel, File file)
     {
         try
         {
