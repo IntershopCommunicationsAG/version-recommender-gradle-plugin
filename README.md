@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/IntershopCommunicationsAG/version-recommender-gradle-plugin.svg?branch=master)](https://travis-ci.org/IntershopCommunicationsAG/version-recommender-gradle-plugin)
+
 # Introduction
 
 This gradle plugin allows to automate dependency updates. Therefore the project can define an update strategy.
